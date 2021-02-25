@@ -12,7 +12,9 @@ const Outlet = sequelize.define('outlets', {
     primaryKey: true
   },
   name: Sequelize.STRING,
+  device: Sequelize.STRING,
   state: Sequelize.STRING,
+  isConnected: Sequelize.BOOLEAN,
   ownerId: Sequelize.INTEGER,
   locationId: Sequelize.INTEGER
 },{

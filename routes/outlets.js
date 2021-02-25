@@ -12,6 +12,7 @@ router.get('/:id/owner', outletsController.getOwner);
 router.get('/:id/location', outletsController.getLocation);
 
 router.post('/:id/state', outletsController.postState);
+router.post('/newOutlet', outletsController.newOutlet);
 
 
 

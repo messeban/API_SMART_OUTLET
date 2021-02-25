@@ -59,8 +59,14 @@ module.exports = {
         .then(outlet =>{
             outlet.state = req.body.state;
             outlet.save();
+            //mqtt broker aanroepen
         })
         .catch(err => console.log(err));
+        res.status(200).end();
+    },
+    newOutlet: (req, res, next) => {
+        newOutlet = Outlet.create({name: req.body.name, device: req.body.device, state:"OFF", isConnected: false,ownerId: req.body.ownerId, locationId: req.body.locationId});
+        res.status(200).end();
     }
 
 }

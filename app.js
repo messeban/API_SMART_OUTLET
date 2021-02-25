@@ -5,6 +5,8 @@ const sequelize = require('./util/database');
 const schedule = require('node-schedule');
 const path = require('path');
 const outletsRoutes = require('./routes/outlets');
+const ownersRoutes = require('./routes/owners');
+
 const Owner = require('./models/owner');
 const Location = require('./models/location');
 const Outlet = require('./models/outlet');
@@ -21,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/outlets', outletsRoutes);
+app.use('/owners', ownersRoutes);
 
 /*Owner.hasMany(Outlet,{as: 'Outlets'});
 Location.hasMany(Outlet,{as: 'Outlets'});*/
@@ -28,8 +31,8 @@ Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
 
 sequelize
-  //.sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  //.sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })
