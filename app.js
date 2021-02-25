@@ -28,8 +28,8 @@ Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
 
 sequelize
-  .sync({ force: true })
-  //.sync()
+  //.sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })

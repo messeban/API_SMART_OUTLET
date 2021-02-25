@@ -9,7 +9,7 @@ const Owner = sequelize.define('owners', {
     allowNull: false,
     primaryKey: true
   },
-  fistName: Sequelize.STRING,
+  firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   dateOfBirth: Sequelize.DATE,
   street: Sequelize.STRING,

@@ -12,6 +12,7 @@ const Outlet = sequelize.define('outlets', {
     primaryKey: true
   },
   name: Sequelize.STRING,
+  state: Sequelize.STRING,
   ownerId: Sequelize.INTEGER,
   locationId: Sequelize.INTEGER
 },{
