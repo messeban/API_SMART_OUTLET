@@ -3,6 +3,10 @@ const { Op } = require("sequelize");
 const Outlet = require('../models/outlet');
 const Owner = require("../models/owner");
 const Location = require("../models/location");
+const Measurement = require("../models/measurement");
+var mqtt = require('mqtt')
+var client  = mqtt.connect('mqtt://broker.hivemq.com:1883')
+client.subscribe("outletsMeasurements");
 
 module.exports = {
     getOutlets: (req, res, next) => {
@@ -59,6 +63,7 @@ module.exports = {
         .then(outlet =>{
             outlet.state = req.body.state;
             outlet.save();
+            client.publish("outlet"+id, req.body.state)
             //mqtt broker aanroepen
         })
         .catch(err => console.log(err));
@@ -70,3 +75,14 @@ module.exports = {
     }
 
 }
+client.on('message', function (topic, message, payload) {
+    // message is Buffer
+    const buffer = JSON.stringify(message.toString());
+    const buffer2 = JSON.parse(buffer);
+    const buffer3 = JSON.parse(buffer2);
+    for(var i = 0; i < buffer3.data.length; i++) {
+        var obj = buffer3.data[i];
+        Measurement.create({t: Date.now(), V: obj.V, I: obj.I, outletId: buffer3.id});
+    }
+    console.log(buffer3);
+  })

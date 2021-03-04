@@ -13,6 +13,7 @@ const Outlet = require('./models/outlet');
 const Measurement = require('./models/measurement');
 const app = express();
 
+
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -31,8 +32,8 @@ Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
 
 sequelize
-  .sync({ force: true })
-  //.sync()
+  //.sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })
