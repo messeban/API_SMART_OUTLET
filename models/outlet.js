@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const {Owner} = require('./owner');
+const {User} = require('./user');
 const {Location} = require('./location');
 
 const Outlet = sequelize.define('outlets', {
@@ -15,7 +15,7 @@ const Outlet = sequelize.define('outlets', {
   device: Sequelize.STRING,
   state: Sequelize.STRING,
   isConnected: Sequelize.BOOLEAN,
-  ownerId: Sequelize.INTEGER,
+  userId: Sequelize.INTEGER,
   locationId: Sequelize.INTEGER
 },{
   timestamps: false

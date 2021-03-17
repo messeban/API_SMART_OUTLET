@@ -2,13 +2,22 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const Owner = sequelize.define('owners', {
+const User = sequelize.define('users', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate:{
+      isEmail: true
+    }
+  },
+  username: Sequelize.STRING,
+  password: Sequelize.STRING,
   firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   dateOfBirth: Sequelize.DATE,
@@ -21,4 +30,4 @@ const Owner = sequelize.define('owners', {
   timestamps: false
 });
 
-module.exports = Owner;
+module.exports = User;

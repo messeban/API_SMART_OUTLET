@@ -5,10 +5,11 @@ const sequelize = require('./util/database');
 const schedule = require('node-schedule');
 const path = require('path');
 const outletsRoutes = require('./routes/outlets');
-const ownersRoutes = require('./routes/owners');
+const usersRoutes = require('./routes/users');
 
-const Owner = require('./models/owner');
+const User = require('./models/user');
 const Location = require('./models/location');
+const Rooms = require("./models/room");
 const Outlet = require('./models/outlet');
 const Measurement = require('./models/measurement');
 const app = express();
@@ -24,16 +25,17 @@ app.use((req, res, next) => {
 });
 
 app.use('/outlets', outletsRoutes);
-app.use('/owners', ownersRoutes);
+app.use('/users', usersRoutes);
 
 /*Owner.hasMany(Outlet,{as: 'Outlets'});
 Location.hasMany(Outlet,{as: 'Outlets'});*/
 Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'id'});
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
-
+Location.hasMany(Rooms,{as: "Rooms", foreignKey:"locationId", sourceKey:"id"});
+Rooms.belongsTo(Measurement,{foreignKey: 'locationId', targetKey: 'id'});
 sequelize
-  //.sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  //.sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })

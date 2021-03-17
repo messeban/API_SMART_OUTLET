@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { Op } = require("sequelize");
 const Outlet = require('../models/outlet');
-const Owner = require("../models/owner");
+const User = require("../models/user");
 const Location = require("../models/location");
 const Measurement = require("../models/measurement");
 var mqtt = require('mqtt')
@@ -28,14 +28,14 @@ module.exports = {
         .catch(err => console.log(err));
 
     },
-    getOwner: (req, res, next) => {
+    getUser: (req, res, next) => {
         const id = req.params.id;
         Outlet.findByPk(id)
         .then(outlet =>{
-            Owner.findByPk(outlet.ownerId)
-            .then(owner=>{
+            User.findByPk(outlet.userId)
+            .then(user=>{
                 res.status(200).json({
-                    owner
+                    user
                 });
             })
             .catch(err => console.log(err));        
@@ -70,7 +70,7 @@ module.exports = {
         res.status(200).end();
     },
     newOutlet: (req, res, next) => {
-        newOutlet = Outlet.create({name: req.body.name, device: req.body.device, state:"OFF", isConnected: false,ownerId: req.body.ownerId, locationId: req.body.locationId});
+        newOutlet = Outlet.create({name: req.body.name, device: req.body.device, state:"OFF", isConnected: false,userId: req.body.userId, locationId: req.body.locationId});
         res.status(200).end();
     }
 
