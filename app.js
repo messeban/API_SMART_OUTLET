@@ -8,6 +8,8 @@ const outletsRoutes = require('./routes/outlets');
 const usersRoutes = require('./routes/users');
 
 const User = require('./models/user');
+const Credential = require('./models/credential');
+
 const Location = require('./models/location');
 const Rooms = require("./models/room");
 const Outlet = require('./models/outlet');
@@ -29,13 +31,19 @@ app.use('/users', usersRoutes);
 
 /*Owner.hasMany(Outlet,{as: 'Outlets'});
 Location.hasMany(Outlet,{as: 'Outlets'});*/
+User.hasOne(Credential,{as: "credentials",foreignKey: 'userId', sourceKey: 'id'});
+Credential.belongsTo(User,{foreignKey: 'userId', targetKey: 'id'});
+User.hasMany(Outlet,{as: "Outlets",foreignKey: 'userId', sourceKey: 'id'});
+Outlet.belongsTo(User,{foreignKey: 'userId', targetKey: 'id'});
+Location.hasMany(Outlet,{as: "Outlets",foreignKey: 'locationId', sourceKey: 'id'});
+Outlet.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
 Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'id'});
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
 Location.hasMany(Rooms,{as: "Rooms", foreignKey:"locationId", sourceKey:"id"});
 Rooms.belongsTo(Measurement,{foreignKey: 'locationId', targetKey: 'id'});
 sequelize
-  .sync({ force: true })
-  //.sync()
+  //.sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })

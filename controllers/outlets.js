@@ -10,21 +10,24 @@ client.subscribe("outletsMeasurements");
 
 module.exports = {
     getOutlets: (req, res, next) => {
-        Outlet.findAll()
+        Outlet.findAll({where:{userId: req.user.id}})
         .then(outlets =>{
           res.status(200).json({
             outlets
-        });        })
+        });
+            })
         .catch(err => console.log(err));
 
     },
     getOutlet: (req, res, next) => {
         const id = req.params.id;
-        Outlet.findByPk(id)
+
+        Outlet.findAll({where:{id: id, userId: req.user.id}})
         .then(outlets =>{
           res.status(200).json({
             outlets
-        });        })
+        });
+            })
         .catch(err => console.log(err));
 
     },
