@@ -14,6 +14,7 @@ router.post('/create',usersController.addPersonalInfo);
 router.post('/create/:id',usersController.addCredentials);
 
 router.post('/addLocation', authenticate.authenticateToken,usersController.addLocation);
+router.post('/addRoom/:locationId', authenticate.authenticateToken,usersController.addLocation);
 
 router.post('/token', usersController.getToken);
 router.post('/login',usersController.login);

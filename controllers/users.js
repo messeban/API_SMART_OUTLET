@@ -7,6 +7,7 @@ const Location = require("../models/location");
 const Credentials = require("../models/credential");
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
+const Room = require('../models/room');
 const saltRounds = 10;
 let refreshTokens = [];
 
@@ -47,20 +48,26 @@ module.exports = {
             })
             .catch(err => console.log(err));
     },
-    addPersonalInfo: (req, res, next) => {
-        User.create({ email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+    addPersonalInfo: async (req, res, next) => {
+        const u = await User.create({ email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+        console.log(u.id);
         res.status(200).end();
     },
-    addCredentials: (req, res, next) => {
+    addCredentials: async (req, res, next) => {
         const userId = req.params.id;
-        bcrypt.hash(req.body.password, saltRounds).then(hash => {
+         bcrypt.hash(req.body.password, saltRounds).then(hash => {
             Credentials.create({ username: req.body.username, password: hash, userId: userId });
-            res.status(200).end();
+            res.status(200).redirect("https://www.google.com/").end();
         });
 
     },
     addLocation: (req, res, next) => {
-        Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country })
+        Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+        res.status(200).end();
+    },
+    addRoom: (req, res, next) => {
+        const locationId = req.params.locationId;
+        Room.create({ name: req.body.name, locationId: locationId });
         res.status(200).end();
     },
     getToken: (req, res) => {

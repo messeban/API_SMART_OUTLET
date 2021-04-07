@@ -11,7 +11,7 @@ const User = require('./models/user');
 const Credential = require('./models/credential');
 
 const Location = require('./models/location');
-const Rooms = require("./models/room");
+const Room = require("./models/room");
 const Outlet = require('./models/outlet');
 const Measurement = require('./models/measurement');
 const app = express();
@@ -39,11 +39,13 @@ Location.hasMany(Outlet,{as: "Outlets",foreignKey: 'locationId', sourceKey: 'id'
 Outlet.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
 Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'id'});
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
-Location.hasMany(Rooms,{as: "Rooms", foreignKey:"locationId", sourceKey:"id"});
-Rooms.belongsTo(Measurement,{foreignKey: 'locationId', targetKey: 'id'});
+Location.hasMany(Room,{as: "Room", foreignKey:"locationId", sourceKey:"id"});
+Room.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
+Room.hasMany(Outlet,{as: "Outlets",foreignKey: 'roomId', sourceKey: 'id'});
+Outlet.belongsTo(Room,{foreignKey: 'roomId', targetKey: 'id'});
 sequelize
-  //.sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  //.sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })
