@@ -11,6 +11,7 @@ const Credential = sequelize.define('Credentials', {
   },
   username: Sequelize.STRING,
   password: Sequelize.STRING,
+  role: Sequelize.STRING,
   access_token: Sequelize.STRING,
   refresh_token: Sequelize.STRING,
   userId: {
