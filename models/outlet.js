@@ -15,7 +15,6 @@ const Outlet = sequelize.define('outlets', {
   device: Sequelize.STRING,
   state: Sequelize.STRING,
   isConnected: Sequelize.BOOLEAN,
-  userId: Sequelize.INTEGER,
   locationId: Sequelize.INTEGER,
   roomId: Sequelize.INTEGER
 },{
