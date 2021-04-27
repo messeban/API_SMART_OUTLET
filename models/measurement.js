@@ -8,10 +8,10 @@ const Measurement = sequelize.define('measurements', {
     allowNull: false,
     primaryKey: true
   },
-  t: Sequelize.FLOAT,
+  t: Sequelize.DATE,
   V: Sequelize.FLOAT,
   I: Sequelize.FLOAT,
-  measured: Sequelize.DATE,
+  W: Sequelize.FLOAT,
   outletId: {
     type: Sequelize.INTEGER,
     allowNull: false

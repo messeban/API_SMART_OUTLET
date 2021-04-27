@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { Op } = require("sequelize");
+const { Op, query } = require("sequelize");
 const Outlet = require('../models/outlet');
 const User = require("../models/user");
 const Location = require("../models/location");
@@ -129,10 +129,35 @@ module.exports = {
         const outletId = req.body.outletId;
         const measurements = req.body.measurements;
         measurements.map(async (value)=>{
-            await Measurement.create({t: value.t, V: value.V, I:value.I, measured:value.measured})
+            await Measurement.create({t: value.t, V: value.V, I:value.I, W: value.W})
             .catch(err => console.log(err));
         })
        
+    },
+    getHourlyAverage: async (req, res, next) => {
+
+        const [results, metadata] = await query("SELECT AVG(V) , t FROM measurements GROUP BY HOUR( t )");
+        console.log(results);
+
+        /*const outletId = req.body.outletId;
+        const measurements = req.body.measurements;
+        measurements.map(async (value)=>{
+            await Measurement.create({t: value.t, V: value.V, I:value.I, measured:value.measured})
+            .catch(err => console.log(err));
+        })*/
+       
+    },
+    getDailyAverage: async (req, res, next) => {
+        const [results, metadata] = await query("SELECT AVG(V), AVG(I), AVG(W), DAY(t) as 'Day' FROM hourlyAverages GROUP BY DAY( t )");
+        console.log(results);
+    },
+    getWeeklyAverage: async (req, res, next) => {
+        const [results, metadata] = await query("SELECT AVG(V), AVG(I), AVG(W), WEEK(t) as 'Week' FROM dailyAverages GROUP BY WEEK( t )");
+        console.log(results);
+    },
+    getMonthlyAverage: async (req, res, next) => {
+        const [results, metadata] = await query("SELECT AVG(V), AVG(I), AVG(W), MONTH(t) as 'Month' FROM weeklyAverages GROUP BY MONTH( t )");
+        console.log(results);
     }
 
 }
