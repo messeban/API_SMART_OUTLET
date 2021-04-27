@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const User = sequelize.define('users', {
+const User = sequelize.define('Users', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -16,14 +16,15 @@ const User = sequelize.define('users', {
       isEmail: true
     }
   },
-  firstName: Sequelize.STRING,
-  lastName: Sequelize.STRING,
-  dateOfBirth: Sequelize.DATE,
-  street: Sequelize.STRING,
-  houseNumber: Sequelize.INTEGER,
-  zipCode: Sequelize.INTEGER,
-  city: Sequelize.STRING,
-  country: Sequelize.STRING
+  username: Sequelize.STRING,
+  password: Sequelize.STRING,
+  role: Sequelize.STRING,
+  access_token: Sequelize.STRING,
+  refresh_token: Sequelize.STRING,
+  userId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  }
 },{
   timestamps: false
 });

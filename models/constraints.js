@@ -1,12 +1,12 @@
 const User = require('./user');
-const Credential = require('./credential');
+const PersonalInfo = require('./personalInfo');
 const Location = require('./location');
 const Room = require("./room");
 const Outlet = require('./outlet');
 const Measurement = require('./measurement');
 
-User.hasOne(Credential,{as: "credentials",foreignKey: 'userId', sourceKey: 'id'});
-Credential.belongsTo(User,{foreignKey: 'userId', targetKey: 'id'});
+User.hasOne(PersonalInfo,{as: "personalsInfos",foreignKey: 'userId', sourceKey: 'id'});
+PersonalInfo.belongsTo(User,{foreignKey: 'userId', targetKey: 'id'});
 
 User.belongsToMany(Outlet, { through: 'UsersOutlets' });
 Outlet.belongsToMany(User, { through: 'UsersOutlets' });
@@ -17,7 +17,10 @@ Outlet.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
 Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'id'});
 Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
 
-Location.hasMany(Room,{as: "Room", foreignKey:"locationId", sourceKey:"id"});
+User.hasMany(Location, {as: "Locations", foreignKey: "userId", sourceKey:"id"});
+Location.belongsTo(User, {foreignKey: 'userId', targetKey: 'id'})
+
+Location.hasMany(Room,{as: "Rooms", foreignKey:"locationId", sourceKey:"id"});
 Room.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
 
 Room.hasMany(Outlet,{as: "Outlets",foreignKey: 'roomId', sourceKey: 'id'});

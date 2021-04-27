@@ -2,22 +2,23 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const Location = sequelize.define('locations', {
+const personalInfo = sequelize.define('personalInfos', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
-  room: Sequelize.STRING,
+  firstName: Sequelize.STRING,
+  lastName: Sequelize.STRING,
+  dateOfBirth: Sequelize.DATE,
   street: Sequelize.STRING,
   houseNumber: Sequelize.INTEGER,
   zipCode: Sequelize.INTEGER,
   city: Sequelize.STRING,
-  country: Sequelize.STRING,
-  userId: Sequelize.INTEGER
+  country: Sequelize.STRING
 },{
   timestamps: false
 });
 
-module.exports = Location;
+module.exports = personalInfo;

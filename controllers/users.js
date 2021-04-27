@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const Outlet = require('../models/outlet');
 const User = require("../models/User");
 const Location = require("../models/location");
-const Credentials = require("../models/credential");
+const PersonalInfo = require("../models/personalInfo");
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const Room = require('../models/room');
@@ -49,20 +49,21 @@ module.exports = {
             .catch(err => console.log(err));
     },
     addPersonalInfo: async (req, res, next) => {
-        const u = await User.create({ email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+        const u = await Address.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
         console.log(u.id);
         res.status(200).end();
     },
-    addCredentials: async (req, res, next) => {
+    addUser: async (req, res, next) => {
         const userId = req.params.id;
          bcrypt.hash(req.body.password, saltRounds).then(hash => {
-            Credentials.create({ username: req.body.username, password: hash, userId: userId });
-            res.status(200).redirect("https://www.google.com/").end();
+            User.create({ email: req.body.email, username: req.body.username, password: hash, userId: userId });
+            res.status(200).end();
         });
 
     },
     addLocation: (req, res, next) => {
-        Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+        const id = req.user.id;
+        Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country, userId: id });
         res.status(200).end();
     },
     addRoom: (req, res, next) => {
@@ -76,7 +77,7 @@ module.exports = {
         if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
             if (err) return res.sendStatus(403)
-            const accessToken = generateAccessToken({ id: user.id })
+            const accessToken = generateAccessToken(user)
             res.json({ accessToken: accessToken })
         })
     },
@@ -90,7 +91,7 @@ module.exports = {
         // Authenticate User
         const username = req.body.username;
         const password = req.body.password;
-        Credentials.findOne({
+        User.findOne({
             attributes: ['password', 'userId'],
             where: { username: username }
         })
