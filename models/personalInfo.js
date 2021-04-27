@@ -16,7 +16,8 @@ const personalInfo = sequelize.define('personalInfos', {
   houseNumber: Sequelize.INTEGER,
   zipCode: Sequelize.INTEGER,
   city: Sequelize.STRING,
-  country: Sequelize.STRING
+  country: Sequelize.STRING,
+  userId: Sequelize.INTEGER
 },{
   timestamps: false
 });

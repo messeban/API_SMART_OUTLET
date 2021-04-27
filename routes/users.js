@@ -11,10 +11,10 @@ router.get('/', authenticate.authenticateToken,usersController.getUser);
 router.get('/outlets', authenticate.authenticateToken,usersController.getOutlets);
 //router.get('/:id/locations', usersController.getLocations);
 router.post('/create',usersController.addPersonalInfo);
-router.post('/create/:id',usersController.addCredentials);
+router.post('/create/:id',usersController.addUser);
 
 router.post('/addLocation', authenticate.authenticateToken,usersController.addLocation);
-router.post('/addRoom/:locationId', authenticate.authenticateToken,usersController.addLocation);
+router.post('/addRoom/:locationId', authenticate.authenticateToken,usersController.addRoom);
 
 router.post('/token', usersController.getToken);
 router.post('/login',usersController.login);

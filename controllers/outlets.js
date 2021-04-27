@@ -3,20 +3,28 @@ const { Op } = require("sequelize");
 const Outlet = require('../models/outlet');
 const User = require("../models/user");
 const Location = require("../models/location");
+const Room = require("../models/room");
+
 const Measurement = require("../models/measurement");
-var mqtt = require('mqtt')
+var mqtt = require('mqtt');
+const { values } = require('mysql2/lib/constants/charset_encodings');
 var client  = mqtt.connect('mqtt://broker.hivemq.com:1883')
 client.subscribe("outletsMeasurements");
 
 module.exports = {
-    getOutlets: (req, res, next) => {
-        Outlet.findAll({where:{userId: req.user.id}})
-        .then(outlets =>{
-          res.status(200).json({
-            outlets
-        });
+    getOutlets: async (req, res, next) => {
+        const id = req.user.id;
+        await User.findAll({
+            where:{id:id},
+            include: Outlet
+        })
+
+            .then(outlets => {
+                res.status(200).json({
+                    outlets
+                });
             })
-        .catch(err => console.log(err));
+            .catch(err => console.log(err));
 
     },
     getOutlet: (req, res, next) => {
@@ -59,6 +67,20 @@ module.exports = {
     })
         .catch(err => console.log(err));
     },
+    getRoom: (req, res, next) => {
+        const id = req.params.id;
+        Outlet.findByPk(id)
+        .then(outlet =>{
+            Room.findByPk(outlet.roomId)
+            .then(room=>{
+                res.status(200).json({
+                    room
+                });
+            })
+            .catch(err => console.log(err));        
+    })
+        .catch(err => console.log(err));
+    },
     postState: (req, res, next) => {
         console.log(req.body.state);
         const id = req.params.id;
@@ -72,9 +94,45 @@ module.exports = {
         .catch(err => console.log(err));
         res.status(200).end();
     },
-    newOutlet: (req, res, next) => {
-        newOutlet = Outlet.create({name: req.body.name, device: req.body.device, state:"OFF", isConnected: false,userId: req.body.userId, locationId: req.body.locationId});
-        res.status(200).end();
+    newOutlet: async (req, res, next) => {
+        const id = req.user.id;
+        console.log(id);
+        nOutlet = await Outlet.create({name: req.body.name, device: req.body.device, state:"OFF", isConnected: false,userId: req.body.userId, locationId: req.body.locationId, roomId: req.body.roomId});
+        await User.findByPk(id)
+        .then(async (user)=>{
+            console.log(user);
+            await user.addOutlet(nOutlet);
+            res.status(200).end();
+        })
+
+    },
+    getOutletsFromRoom: async (req, res, next) => {
+        const roomId = req.params.id;
+        const userId = req.user.id;
+        await Outlet.findAll({
+            where:{
+                roomId
+            },
+            include: [{
+                model: User,
+                through: { where: {userId: userId}}
+            }]
+        })
+        .then(outlets =>{
+            res.status(200).json({
+                outlets
+            });
+    })
+        .catch(err => console.log(err));
+    },
+    sendData: async (req, res, next) => {
+        const outletId = req.body.outletId;
+        const measurements = req.body.measurements;
+        measurements.map(async (value)=>{
+            await Measurement.create({t: value.t, V: value.V, I:value.I, measured:value.measured})
+            .catch(err => console.log(err));
+        })
+       
     }
 
 }

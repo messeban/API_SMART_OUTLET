@@ -20,8 +20,8 @@ app.use('/outlets', outletsRoutes);
 app.use('/users', usersRoutes);
 
 sequelize
-  .sync({ force: true })
-  //.sync()
+  //.sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(process.env.PORT || 5000);
   })

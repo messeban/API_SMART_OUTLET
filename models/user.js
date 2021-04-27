@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const User = sequelize.define('Users', {
+const User = sequelize.define('users', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -20,11 +20,7 @@ const User = sequelize.define('Users', {
   password: Sequelize.STRING,
   role: Sequelize.STRING,
   access_token: Sequelize.STRING,
-  refresh_token: Sequelize.STRING,
-  userId: {
-    type: Sequelize.INTEGER,
-    allowNull: false
-  }
+  refresh_token: Sequelize.STRING
 },{
   timestamps: false
 });

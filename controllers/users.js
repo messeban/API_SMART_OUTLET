@@ -1,8 +1,9 @@
 require('dotenv').config()
 
 const { Op } = require("sequelize");
-const Outlet = require('../models/outlet');
 const User = require("../models/User");
+const Outlet = require('../models/outlet');
+
 const Location = require("../models/location");
 const PersonalInfo = require("../models/personalInfo");
 const jwt = require('jsonwebtoken')
@@ -35,21 +36,21 @@ module.exports = {
     },
     getOutlets: (req, res, next) => {
         const id = req.user.id;
-        Outlet.findAll({
-            where: {
-                userId: id
-            },
-            include: Location
+        User.findAll({
+            where:{id:id},
+            include: Outlet
         })
+
             .then(outlets => {
                 res.status(200).json({
                     outlets
                 });
             })
             .catch(err => console.log(err));
+
     },
     addPersonalInfo: async (req, res, next) => {
-        const u = await Address.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
+        const u = await PersonalInfo.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
         console.log(u.id);
         res.status(200).end();
     },
@@ -92,7 +93,7 @@ module.exports = {
         const username = req.body.username;
         const password = req.body.password;
         User.findOne({
-            attributes: ['password', 'userId'],
+            attributes: ['password', 'id'],
             where: { username: username }
         })
             .then(hashedPassword => {
@@ -101,7 +102,7 @@ module.exports = {
                         return res.sendStatus(403);
                     }
                     else {
-                        User.findOne({ where: { id: hashedPassword.userId } })
+                        User.findOne({ where: { id: hashedPassword.id } })
                             .then(userResult => {
                                 const userId = req.body.id;
                                 const user = { id: userResult.id, username: username };

@@ -11,6 +11,7 @@ const Measurement = sequelize.define('measurements', {
   t: Sequelize.FLOAT,
   V: Sequelize.FLOAT,
   I: Sequelize.FLOAT,
+  measured: Sequelize.DATE,
   outletId: {
     type: Sequelize.INTEGER,
     allowNull: false

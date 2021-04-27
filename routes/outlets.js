@@ -11,11 +11,12 @@ router.get('/',authenticate.authenticateToken, outletsController.getOutlets);
 router.get('/:id',authenticate.authenticateToken, outletsController.getOutlet);
 router.get('/:id/user', outletsController.getUser);
 router.get('/:id/location', outletsController.getLocation);
-router.get('/:id/location/room', outletsController.getLocation);
+router.get('/:id/location/room', outletsController.getRoom);
+router.get('/room/:id', authenticate.authenticateToken,outletsController.getOutletsFromRoom)
 
 router.post('/:id/state', outletsController.postState);
-router.post('/newOutlet', outletsController.newOutlet);
+router.post('/newOutlet',authenticate.authenticateToken, outletsController.newOutlet);
 
-
+router.post("/sendData",outletsController.sendData);
 
 module.exports = router;
