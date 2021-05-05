@@ -9,7 +9,6 @@ const Location = sequelize.define('locations', {
     allowNull: false,
     primaryKey: true
   },
-  room: Sequelize.STRING,
   street: Sequelize.STRING,
   houseNumber: Sequelize.INTEGER,
   zipCode: Sequelize.INTEGER,

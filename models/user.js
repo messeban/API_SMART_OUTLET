@@ -18,9 +18,11 @@ const User = sequelize.define('users', {
   },
   username: Sequelize.STRING,
   password: Sequelize.STRING,
-  role: Sequelize.STRING,
-  access_token: Sequelize.STRING,
-  refresh_token: Sequelize.STRING
+  role:{
+    type: Sequelize.STRING,
+    defaultValue: "user"
+  },
+  personalInfoId: Sequelize.INTEGER
 },{
   timestamps: false
 });

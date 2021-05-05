@@ -9,6 +9,7 @@ const router = express.Router();
 // GET /feed/posts
 router.get('/',authenticate.authenticateToken, outletsController.getOutlets);
 router.get('/:id',authenticate.authenticateToken, outletsController.getOutlet);
+
 router.get('/:id/user', outletsController.getUser);
 router.get('/:id/location', outletsController.getLocation);
 router.get('/:id/location/room', outletsController.getRoom);
@@ -18,5 +19,6 @@ router.post('/:id/state', outletsController.postState);
 router.post('/newOutlet',authenticate.authenticateToken, outletsController.newOutlet);
 
 router.post("/sendData",outletsController.sendData);
+router.get('/averages/hourly', outletsController.getHourlyAverage);
 
 module.exports = router;

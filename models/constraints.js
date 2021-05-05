@@ -5,8 +5,9 @@ const Room = require("./room");
 const Outlet = require('./outlet');
 const Measurement = require('./measurement');
 
-User.hasOne(PersonalInfo,{as: "personalsInfos",foreignKey: 'userId', sourceKey: 'id'});
-PersonalInfo.belongsTo(User,{foreignKey: 'userId', targetKey: 'id'});
+
+PersonalInfo.hasOne(User,{as: "Users",foreignKey: 'personalInfoId', sourceKey: 'id'});
+User.belongsTo(PersonalInfo,{foreignKey: 'personalInfoId', targetKey: 'id'});
 
 User.belongsToMany(Outlet, { through: 'UsersOutlets' });
 Outlet.belongsToMany(User, { through: 'UsersOutlets' });

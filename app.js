@@ -11,10 +11,10 @@ const usersRoutes = require('./routes/users');
 const constraints = require('./models/constraints');
 
 const app = express();
-
-app.use(bodyParser.json());
-
 app.use(cors());
+
+app.use(express.urlencoded({extended: true })); 
+app.use(express.json()); 
 
 app.use('/outlets', outletsRoutes);
 app.use('/users', usersRoutes);

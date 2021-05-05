@@ -16,7 +16,7 @@ module.exports = {
     getUsers: (req, res, next) => {
         User.findAll()
             .then(users => {
-                res.status(200).json({
+                res.sendStatus(200).json({
                     users
                 });
             })
@@ -27,7 +27,7 @@ module.exports = {
         const id = req.user.id;
         User.findByPk(id)
             .then(user => {
-                res.status(200).json({
+                res.sendStatus(200).json({
                     user
                 });
             })
@@ -42,7 +42,7 @@ module.exports = {
         })
 
             .then(outlets => {
-                res.status(200).json({
+                res.sendStatus(200).json({
                     outlets
                 });
             })
@@ -52,34 +52,66 @@ module.exports = {
     addPersonalInfo: async (req, res, next) => {
         const u = await PersonalInfo.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
         console.log(u.id);
-        res.status(200).end();
+        res.sendStatus(200).json({personalId: u.id}).end();
     },
     addUser: async (req, res, next) => {
-        const userId = req.params.id;
+        const personalInfoId = req.params.id;
          bcrypt.hash(req.body.password, saltRounds).then(hash => {
-            User.create({ email: req.body.email, username: req.body.username, password: hash, userId: userId });
-            res.status(200).end();
+            User.create({ email: req.body.email, username: req.body.username, password: hash, personalInfoId });
+            res.sendStatus(200).end();
         });
 
     },
-    addLocation: (req, res, next) => {
-        const id = req.user.id;
-        Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country, userId: id });
-        res.status(200).end();
+    getLocations: (req, res, next) => {
+        Location.findAll({where:{userId:req.user.id}})
+            .then(locations => {
+                res.sendStatus(200).json({
+                    locations
+                });
+            })
+            .catch(err => console.log(err));
+
     },
-    addRoom: (req, res, next) => {
+    getRooms: (req, res, next) => {
+        const locationId = req.params.id;
+        Room.findAll({where:{locationId}})
+            .then(rooms => {
+                res.sendStatus(200).json({
+                    rooms
+                });
+            })
+            .catch(err => console.log(err));
+
+    },
+
+    addLocation: async (req, res, next) => {
+        const id = req.user.id;
+        await Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country, userId: id })
+        .then((result)=>{
+            const locationId = result.id;
+            res.status(200).json(locationId).end();
+
+        })
+    },
+    addRoom: async (req, res, next) => {
+        const id = req.user.id;
+
         const locationId = req.params.locationId;
-        Room.create({ name: req.body.name, locationId: locationId });
-        res.status(200).end();
+        await Room.create({ name: req.body.name, locationId: locationId })
+        .then((result)=>{
+            const roomId = result.id;
+            res.status(200).json(roomId).end();
+
+        })
     },
     getToken: (req, res) => {
-        const refreshToken = req.body.token
+        const refreshToken = req.body.token;
         if (refreshToken == null) return res.sendStatus(401)
         if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403)
-            const accessToken = generateAccessToken(user)
-            res.json({ accessToken: accessToken })
+            if (err) return res.sendStatus(403);
+            const accessToken = generateAccessToken(user);
+            res.json({ accessToken: accessToken });
         })
     },
 
@@ -90,6 +122,7 @@ module.exports = {
 
     login: (req, res) => {
         // Authenticate User
+       // const buffer=JSON.parse(Object.keys(req.body)[0]);
         const username = req.body.username;
         const password = req.body.password;
         User.findOne({
@@ -97,7 +130,9 @@ module.exports = {
             where: { username: username }
         })
             .then(hashedPassword => {
-                bcrypt.compare(password, hashedPassword.password).then((result) => {
+                if(hashedPassword){
+                    bcrypt.compare(password, hashedPassword.password)
+                .then((result) => {
                     if (!result) {
                         return res.sendStatus(403);
                     }
@@ -107,18 +142,24 @@ module.exports = {
                                 const userId = req.body.id;
                                 const user = { id: userResult.id, username: username };
 
-                                const accessToken = generateAccessToken(user)
-                                const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-                                refreshTokens.push(refreshToken)
-                                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+                                const accessToken = generateAccessToken(user);
+                                const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+                                refreshTokens.push(refreshToken);
+                                res.sendStatus(200).json({ accessToken: accessToken, refreshToken: refreshToken })
                             })
 
                     }
 
                 })
-            .catch((err)=>{
-                console.log(err);
-            })
+                .catch((err)=>{
+                    console.log(err);
+                })
+                }
+                else{
+                    return res.sendStatus(403);
+                }
+                
+
             })
 
 
@@ -126,6 +167,11 @@ module.exports = {
     }
 }
 
-function generateAccessToken(user) {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
+function generateAccessToken(user) { 
+    const buffer= {
+        id:user.id,
+        username: user.username
+    }
+    console.log(user);
+    return jwt.sign(buffer, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
 }

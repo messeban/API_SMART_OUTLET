@@ -13,8 +13,14 @@ const Outlet = sequelize.define('outlets', {
   },
   name: Sequelize.STRING,
   device: Sequelize.STRING,
-  state: Sequelize.STRING,
-  isConnected: Sequelize.BOOLEAN,
+  state: {
+    type: Sequelize.STRING,
+    defaultValue: "OFF"
+  },
+  isConnected: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  },
   locationId: Sequelize.INTEGER,
   roomId: Sequelize.INTEGER
 },{
