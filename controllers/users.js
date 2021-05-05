@@ -16,7 +16,7 @@ module.exports = {
     getUsers: (req, res, next) => {
         User.findAll()
             .then(users => {
-                res.sendStatus(200).json({
+                res.status(200).json({
                     users
                 });
             })
@@ -27,7 +27,7 @@ module.exports = {
         const id = req.user.id;
         User.findByPk(id)
             .then(user => {
-                res.sendStatus(200).json({
+                res.status(200).json({
                     user
                 });
             })
@@ -42,7 +42,7 @@ module.exports = {
         })
 
             .then(outlets => {
-                res.sendStatus(200).json({
+                res.status(200).json({
                     outlets
                 });
             })
@@ -52,20 +52,20 @@ module.exports = {
     addPersonalInfo: async (req, res, next) => {
         const u = await PersonalInfo.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
         console.log(u.id);
-        res.sendStatus(200).json({personalId: u.id}).end();
+        res.status(200).json({personalId: u.id}).end();
     },
     addUser: async (req, res, next) => {
         const personalInfoId = req.params.id;
          bcrypt.hash(req.body.password, saltRounds).then(hash => {
             User.create({ email: req.body.email, username: req.body.username, password: hash, personalInfoId });
-            res.sendStatus(200).end();
+            res.status(200).end();
         });
 
     },
     getLocations: (req, res, next) => {
         Location.findAll({where:{userId:req.user.id}})
             .then(locations => {
-                res.sendStatus(200).json({
+                res.status(200).json({
                     locations
                 });
             })
@@ -76,7 +76,7 @@ module.exports = {
         const locationId = req.params.id;
         Room.findAll({where:{locationId}})
             .then(rooms => {
-                res.sendStatus(200).json({
+                res.status(200).json({
                     rooms
                 });
             })
@@ -117,7 +117,7 @@ module.exports = {
 
     logout: (req, res) => {
         refreshTokens = refreshTokens.filter(token => token !== req.body.token)
-        res.sendStatus(204)
+        res.sendStatus(204);
     },
 
     login: (req, res) => {
@@ -145,7 +145,7 @@ module.exports = {
                                 const accessToken = generateAccessToken(user);
                                 const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
                                 refreshTokens.push(refreshToken);
-                                res.sendStatus(200).json({ accessToken: accessToken, refreshToken: refreshToken })
+                                res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken })
                             })
 
                     }
