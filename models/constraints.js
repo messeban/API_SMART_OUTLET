@@ -15,8 +15,8 @@ Outlet.belongsToMany(User, { through: 'UsersOutlets' });
 Location.hasMany(Outlet,{as: "Outlets",foreignKey: 'locationId', sourceKey: 'id'});
 Outlet.belongsTo(Location,{foreignKey: 'locationId', targetKey: 'id'});
 
-Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'id'});
-Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'id'});
+Outlet.hasMany(Measurement,{as: "Measurements",foreignKey: 'outletId', sourceKey: 'outletId'});
+Measurement.belongsTo(Outlet,{foreignKey: 'outletId', targetKey: 'outletId'});
 
 User.hasMany(Location, {as: "Locations", foreignKey: "userId", sourceKey:"id"});
 Location.belongsTo(User, {foreignKey: 'userId', targetKey: 'id'})

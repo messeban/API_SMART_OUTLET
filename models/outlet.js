@@ -22,7 +22,12 @@ const Outlet = sequelize.define('outlets', {
     defaultValue: false
   },
   locationId: Sequelize.INTEGER,
-  roomId: Sequelize.INTEGER
+  roomId: Sequelize.INTEGER,
+  outletId: {
+    type: Sequelize.INTEGER,
+    foreignKey:true
+  }
+
 },{
   timestamps: false
 });

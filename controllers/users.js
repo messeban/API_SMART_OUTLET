@@ -86,7 +86,7 @@ module.exports = {
 
     addLocation: async (req, res, next) => {
         const id = req.user.id;
-        await Location.create({ street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country, userId: id })
+        await Location.create({name:req.body.name ,street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country, userId: id })
         .then((result)=>{
             const locationId = result.id;
             res.status(200).json(locationId).end();

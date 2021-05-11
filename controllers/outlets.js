@@ -92,15 +92,14 @@ module.exports = {
       })
       .catch((err) => console.log(err));
   },
-  postState: (req, res, next) => {
+  postConnected: (req, res, next) => {
     console.log(req.body.state);
     const id = req.params.id;
     Outlet.findByPk(id)
       .then((outlet) => {
-        outlet.state = req.body.state;
+        outlet.isConnected = req.body.isConnected;
         outlet.save();
-        client.publish("outlet" + id, req.body.state);
-        //mqtt broker aanroepen
+
       })
       .catch((err) => console.log(err));
     res.status(200).end();
@@ -113,6 +112,7 @@ module.exports = {
       device: req.body.device,
       locationId: req.body.locationId,
       roomId: req.body.roomId,
+      outletId: req.body.outletId
     });
     const u = await User.findByPk(id)
       .then(async (user) => {
@@ -141,21 +141,26 @@ module.exports = {
       })
       .catch((err) => console.log(err));
   },
-  sendData: async (req, res, next) => {
+  receiveData: async (req, res, next) => {
     const outletId = req.body.outletId;
-    const measurements = req.body.measurements;
-    measurements.map(async (value) => {
+    const t = req.body.t;
+    const V = req.body.V;
+    const I = req.body.I;
+    const W = V*I;
+    console.log(req.body);
       await Measurement.create({
-        t: value.t,
-        V: value.V,
-        I: value.I,
-        W: value.W,
+        t,
+        V,
+        I,
+        W,
+        outletId: outletId
       }).catch((err) => console.log(err));
-    });
+    res.sendStatus(200);
   },
   getHourlyAverage: async (req, res, next) => {
+    const outletId = req.body.outletId;
     const [results, metadata] = await sequelize.query(
-      "SELECT AVG(V), AVG(I), AVG(W), t FROM measurements WHERE outletId = 1 GROUP BY HOUR( t )"
+      `SELECT AVG(V), AVG(I), AVG(W), HOUR(t) FROM measurements WHERE outletId = ${outletId} GROUP BY HOUR( t )`
     );
     console.log(results);
 
