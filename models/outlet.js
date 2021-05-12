@@ -15,7 +15,7 @@ const Outlet = sequelize.define('outlets', {
   device: Sequelize.STRING,
   state: {
     type: Sequelize.STRING,
-    defaultValue: "OFF"
+    defaultValue: "NOT IN USE"
   },
   isConnected: {
     type: Sequelize.BOOLEAN,

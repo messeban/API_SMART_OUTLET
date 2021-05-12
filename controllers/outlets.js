@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { Op } = require("sequelize");
+const { QueryTypes } = require("sequelize");
 const Outlet = require("../models/outlet");
 const User = require("../models/user");
 const Location = require("../models/location");
@@ -9,8 +9,7 @@ const sequelize = require('../util/database');
 const Measurement = require("../models/measurement");
 var mqtt = require("mqtt");
 const { values } = require("mysql2/lib/constants/charset_encodings");
-var client = mqtt.connect("mqtt://broker.hivemq.com:1883");
-client.subscribe("outletsMeasurements");
+var client = mqtt.connect("mqtt://test.mosquitto.org");
 
 module.exports = {
   getOutlets: async (req, res, next) => {
@@ -93,13 +92,13 @@ module.exports = {
       .catch((err) => console.log(err));
   },
   postConnected: (req, res, next) => {
-    console.log(req.body.state);
+    console.log(req.body);
     const id = req.params.id;
     Outlet.findByPk(id)
       .then((outlet) => {
         outlet.isConnected = req.body.isConnected;
         outlet.save();
-
+        client.publish('OUTLET_NR_'+id, JSON.stringify(req.body));
       })
       .catch((err) => console.log(err));
     res.status(200).end();
@@ -158,20 +157,10 @@ module.exports = {
     res.sendStatus(200);
   },
   getHourlyAverage: async (req, res, next) => {
-    const outletId = req.body.outletId;
-    const [results, metadata] = await sequelize.query(
-      `SELECT AVG(V), AVG(I), AVG(W), HOUR(t) FROM measurements WHERE outletId = ${outletId} GROUP BY HOUR( t )`
-    );
-    console.log(results);
-
-    res.sendStatus(200);
-
-    /*const outletId = req.body.outletId;
-        const measurements = req.body.measurements;
-        measurements.map(async (value)=>{
-            await Measurement.create({t: value.t, V: value.V, I:value.I, measured:value.measured})
-            .catch(err => console.log(err));
-        })*/
+    const outletId = req.params.id;
+    const outlets = await sequelize.query( `SELECT AVG(W), HOUR(t) FROM measurements WHERE outletId = ${outletId} GROUP BY HOUR( t ) LIMIT 24`, { type: QueryTypes.SELECT });
+    console.log(outlets);
+    res.json(outlets).status(200);
   },
   getDailyAverage: async (req, res, next) => {
     const [results, metadata] = await query(
