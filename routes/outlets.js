@@ -19,6 +19,6 @@ router.post('/:id/switch', outletsController.postConnected);
 router.post('/newOutlet',authenticate.authenticateToken, outletsController.newOutlet);
 
 router.post("/sendData",outletsController.receiveData);
-router.get('/:id/averages/hourly', authenticate.authenticateToken,outletsController.getHourlyAverage);
+router.get('/:id/averages/hourly', outletsController.getHourlyAverage);
 
 module.exports = router;

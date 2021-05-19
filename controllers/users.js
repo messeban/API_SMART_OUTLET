@@ -51,7 +51,6 @@ module.exports = {
     },
     addPersonalInfo: async (req, res, next) => {
         const u = await PersonalInfo.create({firstName: req.body.firstName, lastName: req.body.lastName, dateOfBirth: req.body.dateOfBirth, street: req.body.street, houseNumber: req.body.houseNumber, zipCode: req.body.zipCode, city: req.body.city, country: req.body.country });
-        console.log(u.id);
         res.status(200).json({personalId: u.id}).end();
     },
     addUser: async (req, res, next) => {
@@ -172,6 +171,5 @@ function generateAccessToken(user) {
         id:user.id,
         username: user.username
     }
-    console.log(user);
     return jwt.sign(buffer, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
 }

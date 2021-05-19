@@ -92,7 +92,6 @@ module.exports = {
       .catch((err) => console.log(err));
   },
   postConnected: (req, res, next) => {
-    console.log(req.body);
     const id = req.params.id;
     Outlet.findByPk(id)
       .then((outlet) => {
@@ -105,7 +104,6 @@ module.exports = {
   },
   newOutlet: async (req, res, next) => {
     const id = req.user.id;
-    console.log(id);
     nOutlet = await Outlet.create({
       name: req.body.name,
       device: req.body.device,
@@ -142,13 +140,18 @@ module.exports = {
   },
   receiveData: async (req, res, next) => {
     const outletId = req.body.outletId;
-    const t = req.body.t;
+    console.log(outletId);
     const V = req.body.V;
     const I = req.body.I;
     const W = V*I;
-    console.log(req.body);
+    console.log(req.body.state);
+    await Outlet.update({ state: req.body.state }, {
+      where: {
+          outletId: outletId
+      }
+    });
       await Measurement.create({
-        t,
+        t:(Date.now()+(2*60*60*1000)),
         V,
         I,
         W,
@@ -158,9 +161,9 @@ module.exports = {
   },
   getHourlyAverage: async (req, res, next) => {
     const outletId = req.params.id;
-    const outlets = await sequelize.query( `SELECT AVG(W), HOUR(t) FROM measurements WHERE outletId = ${outletId} GROUP BY HOUR( t ) LIMIT 24`, { type: QueryTypes.SELECT });
+    const outlets = await sequelize.query( `SELECT AVG(W) as y, HOUR(t) as x FROM measurements WHERE outletId = ${outletId} GROUP BY HOUR( t ) LIMIT 24`, { type: QueryTypes.SELECT });
     console.log(outlets);
-    res.json(outlets).status(200);
+    res.json({"outlets": outlets}).status(200);
   },
   getDailyAverage: async (req, res, next) => {
     const [results, metadata] = await query(
@@ -195,5 +198,4 @@ client.on("message", function (topic, message, payload) {
       outletId: buffer3.id,
     });
   }
-  console.log(buffer3);
 });
